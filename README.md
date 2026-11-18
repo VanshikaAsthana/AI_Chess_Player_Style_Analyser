@@ -1,4 +1,4 @@
-# ♞ ChessDNA — Chess Player Style Analyser
+# ♞ ChessDNA : Chess Player Style Analyser
 
 Predict a chess player's **playing style** from their average game statistics. Pick a sample player or set the sliders yourself, and the app returns the style, how close the player sits to each style, and a radar chart comparing the player with the typical player of that style.
 
