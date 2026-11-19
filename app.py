@@ -174,8 +174,8 @@ def predict(row):
     x[B["log_cols"]] = np.log1p(x[B["log_cols"]])
     x[B["NUM"]] = B["scaler"].transform(x[B["NUM"]])
     Z = B["pca"].transform(x[B["F2"]])
-    style = B["names"][int(B["km"].predict(Z)[0])]
     proba = pd.Series(B["clf"].predict_proba(Z)[0], index=[B["names"][c] for c in B["clf"].classes_])
+    style = proba.idxmax()
     return style, proba
 
 
