@@ -174,8 +174,8 @@ def predict(row):
     x[B["log_cols"]] = np.log1p(x[B["log_cols"]])
     x[B["NUM"]] = B["scaler"].transform(x[B["NUM"]])
     Z = B["pca"].transform(x[B["F2"]])
-    proba = pd.Series(B["clf"].predict_proba(Z)[0],index=[B["names"][c] for c in B["clf"].classes_])
-    return proba.idxmax(), proba
+    proba = pd.Series(B["clf"].predict_proba(Z)[0], index=[B["names"][c] for c in B["clf"].classes_])
+    return proba.idxmax(), proba   # headline always = top probability
 
 
 AXES = [("avg_capture_rate", "Captures", 0.15, 0.30), ("avg_checks_given", "Checks", 0, 12),
@@ -285,4 +285,4 @@ with st.expander("See the numbers"):
 
 st.markdown('<div class="foot">Trained on 5,000 Lichess Elite games · 1,112 players · PCA + KMeans<br>'
             'Playing style is a continuum, so groups overlap and an average player still gets a label. '
-            'The percentages show distance to a style boundary, not certainty.</div>', unsafe_allow_html=True)
+            'The percentages show how strongly this player matches each style.</div>', unsafe_allow_html=True)
