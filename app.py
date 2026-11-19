@@ -174,9 +174,8 @@ def predict(row):
     x[B["log_cols"]] = np.log1p(x[B["log_cols"]])
     x[B["NUM"]] = B["scaler"].transform(x[B["NUM"]])
     Z = B["pca"].transform(x[B["F2"]])
-    proba = pd.Series(B["clf"].predict_proba(Z)[0], index=[B["names"][c] for c in B["clf"].classes_])
-    style = proba.idxmax()
-    return style, proba
+    proba = pd.Series(B["clf"].predict_proba(Z)[0],index=[B["names"][c] for c in B["clf"].classes_])
+    return proba.idxmax(), proba
 
 
 AXES = [("avg_capture_rate", "Captures", 0.15, 0.30), ("avg_checks_given", "Checks", 0, 12),
