@@ -74,16 +74,7 @@ Use Python 3.12 or newer. The pinned numpy version requires it.
 3. Runtime `Python 3`. Build command: `pip install -r requirements.txt`
 4. Start command: `streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true`
 5. Add the environment variable `PYTHON_VERSION` = `3.12.8`.
-
-## Roadmap (MLOps)
-
-- [x] Model saved as a versioned artifact (`joblib`) with pinned dependencies
-- [x] Deployed to a public cloud endpoint (Render)
-- [ ] Serve the model through a FastAPI service (`/predict`, `/health`) with request validation
-- [ ] Containerise with Docker
-- [ ] Track experiments and register model versions with MLflow
-- [ ] CI/CD with GitHub Actions
-- [ ] Expose `/metrics` for Prometheus monitoring
+   
 
 ## Credits
 
