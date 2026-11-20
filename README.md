@@ -1,82 +1,209 @@
-# ♞ ChessDNA : Chess Player Style Analyser
+# ♟️ ChessDNA - Chess Player Style Analyser
 
-Predict a chess player's **playing style** from their average game statistics. Pick a sample player or set the sliders yourself, and the app returns the style, how close the player sits to each style, and a radar chart comparing the player with the typical player of that style.
+**ChessDNA** is a machine learning project that analyses a chess player's gameplay statistics and predicts their playing style. It identifies behavioural patterns from chess games and classifies players into three distinct styles.
 
-**Live demo:** https://ai-chess-player-style-analyser.onrender.com *(free tier: the first visit after idle takes about a minute to wake)*
+The application allows users to select a sample player or enter custom statistics using sliders. It then displays the predicted playing style, style-wise probability scores, and a radar chart comparing the player's characteristics with the typical profile of the predicted style.
 
-## The three styles
+**Live Demo:** [ChessDNA - Try the App](https://ai-chess-player-style-analyser.onrender.com)
 
-| Style | What defines it |
+*Note: The application is hosted on Render's free tier. If it has been inactive, the first visit may take approximately one minute while the service starts.*
+
+---
+
+## ♟️ The Three Playing Styles
+
+| Playing Style | Characteristics |
 |---|---|
-| ♞ **Tactical attacker** | Most checks and sacrifices; castles early |
-| ♛ **Early-queen risk-taker** | Brings the queen out early; castles late; highest capture rate |
-| ♟ **Quiet / positional** | Fewest checks and sacrifices; most pawn moves |
+| **Tactical Attacker** | Frequently gives checks and sacrifices pieces, and tends to castle early. |
+| **Early-Queen Risk-Taker** | Develops the queen early, castles later, and has the highest capture rate. |
+| **Quiet / Positional** | Makes fewer checks and sacrifices, with a higher proportion of pawn moves. |
 
-## How it works
+These categories represent patterns identified by clustering the player statistics; they are not manually assigned ground-truth labels.
+
+## ⚙️ How It Works
+
+ChessDNA follows a complete machine learning pipeline, from chess-game processing to style prediction.
 
 ```mermaid
 flowchart LR
-    A[Lichess Elite games] --> B[Per-player profiles]
-    B --> C[Impute + encode]
-    C --> D[log1p + scale]
-    D --> E[Feature filter]
-    E --> F[PCA 90% variance]
-    F --> G[KMeans, k=3]
-    G --> H[Logistic regression for probabilities]
-    H --> I[Streamlit app]
+    A[Lichess Elite Database] --> B[Game Replay and Feature Extraction]
+    B --> C[Player-Level Profiles]
+    C --> D[Train-Test Split]
+    D --> E[Imputation and Encoding]
+    E --> F[Log Transformation and Scaling]
+    F --> G[Feature Selection]
+    G --> H[PCA: 90% Variance]
+    H --> I[KMeans: 3 Clusters]
+    I --> J[Logistic Regression]
+    J --> K[Streamlit Application]
 ```
 
-- **Data:** Lichess Elite Database (Oct 2025). 5,000 games were sampled and each was replayed move by move with `python-chess` to compute behavioural features, then averaged per player. This gives 1,112 players with 3 or more games.
-- **Features:** capture rate, checks, castling move, development speed, early queen moves, pawn-move ratio, sacrifices, plus opening family and time control.
-- **Leak-free preprocessing:** the train/test split (80/20) happens before any imputer, encoder, scaler, filter or PCA is fitted.
-- **Feature reduction:** 14 features, then 11 after removing near-constant ones, then 7 PCA components.
-- **Model:** KMeans with 3 clusters. Logistic regression is trained on the cluster labels so a new player gets a probability for each style.
+### 1. Data Collection and Processing
+- **Dataset:** Lichess Elite Database (October 2025).
+- Sampled 5,000 chess games.
+- Replayed games move by move using `python-chess`.
+- Extracted gameplay statistics and aggregated them into player-level profiles.
+- Obtained **1,112 player profiles**, each based on at least three games.
 
-## Results
+### 2. Feature Extraction
+The project extracts behavioural features such as:
+- Capture rate
+- Number of checks
+- Castling behaviour
+- Piece development speed
+- Early queen moves
+- Pawn-move ratio
+- Sacrifices
+- Opening family and time control
 
-| Metric | Value |
-|---|---|
-| Silhouette score (train / test) | 0.133 / 0.100 |
-| Cluster sizes (train) | 298 / 316 / 275 |
-| Classifier agreement with KMeans (test) | 97.8% accuracy, 97.8% macro-F1 |
+### 3. Data Preprocessing
+To prevent data leakage, the dataset is split into training and testing sets before fitting preprocessing components.
 
-## Limitations
+The pipeline includes:
+- Missing-value imputation
+- Categorical feature encoding
+- `log1p` transformation
+- Feature scaling
+- Near-constant feature removal
+- Principal Component Analysis (PCA)
 
-- Silhouette scores are low: playing style is a **continuum**, so the groups overlap. An average player still gets a label.
-- The percentages show distance to a style boundary, not certainty.
-- The 97.8% only means the classifier reproduces KMeans' boundaries. There are no ground-truth style labels.
-- The data is an elite blitz pool, so features such as time control and castling habit hardly vary.
+The original 14 features are reduced to 11 after filtering, followed by 7 principal components that retain 90% of the variance.
 
-## Project structure
+### 4. Model Development
+- **KMeans Clustering:** Identifies three groups of players based on their gameplay characteristics.
+- **Logistic Regression:** Learns to reproduce the KMeans cluster assignments and provides probabilities for the three predicted styles.
 
+### 5. Interactive Application
+The Streamlit application allows users to:
+- Select a sample player.
+- Enter custom player statistics.
+- View the predicted playing style.
+- Compare probability scores across all three styles.
+- Explore player characteristics through a radar chart.
+
+## 📊 Model Evaluation
+
+The following results were obtained from the clustering and classification experiments.
+
+| Evaluation Metric | Result |
+|---|---:|
+| Silhouette Score — Training | 0.133 |
+| Silhouette Score — Testing | 0.100 |
+| Training Cluster Sizes | 298 / 316 / 275 |
+| Classifier Accuracy | 97.8% |
+| Classifier Macro-F1 Score | 97.8% |
+
+**Understanding the results:** The 97.8% accuracy measures how closely Logistic Regression reproduces the KMeans cluster assignments. It does not represent accuracy against independently verified human playing-style labels.
+
+## ⚠️ Limitations
+
+- **Overlapping styles:** The relatively low silhouette scores indicate that playing styles overlap and are better understood as a continuum than completely separate categories.
+- **No ground-truth labels:** The clusters are generated using unsupervised learning, so there are no independently verified labels for measuring actual style-prediction accuracy.
+- **Probability interpretation:** The displayed percentages represent the classifier's estimated probabilities for the learned cluster categories, not guaranteed certainty about a player's style.
+- **Dataset limitations:** The dataset consists of elite blitz games, which limits how well the results may generalise to other player groups and time controls.
+- **Feature variability:** Some characteristics, including time control and castling behaviour, show limited variation within the selected dataset.
+
+## 🗂️ Project Structure
+
+```text
+ChessDNA/
+│
+├── app.py
+│   └── Streamlit application for interactive style prediction
+│
+├── AI_POWERED_CHESS_PLAYER_STYLE_ANALYSER.ipynb
+│   └── Notebook containing data analysis, feature engineering,
+│       preprocessing, model training and evaluation
+│
+├── style_model.joblib
+│   └── Saved preprocessing pipeline, PCA, KMeans and
+│       Logistic Regression classifier
+│
+├── requirements.txt
+│   └── Required Python packages and pinned versions
+│
+├── .streamlit/
+│   └── config.toml
+│       └── Streamlit application theme configuration
+│
+└── README.md
+    └── Project documentation
 ```
-app.py                  Streamlit app (UI + prediction)
-style_model.joblib      Fitted preprocessing + PCA + KMeans + classifier
-requirements.txt        Pinned versions (must match the model file)
-.streamlit/config.toml  Theme
+
+The trained model is saved in `style_model.joblib`. The application loads this fitted pipeline directly, so preprocessing and model training are not repeated when the app runs.
+
+## 🚀 Run Locally
+
+**1. Clone the repository**
+
+```bash
+git clone <your-repository-url>
+cd AI_Chess_Player_Analyser
 ```
 
-The model was trained in the project notebook. `style_model.joblib` stores the fitted pipeline, so the app never refits anything.
-
-## Run locally
+**2. Install dependencies**
 
 ```bash
 pip install -r requirements.txt
+```
+
+**3. Start the application**
+
+```bash
 streamlit run app.py
 ```
 
-Use Python 3.12 or newer. The pinned numpy version requires it.
+Open the local URL displayed in your terminal to use the application.
 
-## Deploy on Render
+**Python requirement:** Python 3.12 or newer, subject to the pinned package versions.
 
-1. Push this repo to GitHub.
-2. Render: **New +**, then **Web Service**, then connect the repo.
-3. Runtime `Python 3`. Build command: `pip install -r requirements.txt`
-4. Start command: `streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true`
-5. Add the environment variable `PYTHON_VERSION` = `3.12.8`.
-   
+## ☁️ Deployment on Render
 
-## Credits
+The application is deployed using [Render](https://render.com/).
 
-Data: [Lichess Elite Database](https://database.nikonoel.fr/). Built with `python-chess`, scikit-learn, pandas and Streamlit.
-CSL236 course project, The NorthCap University. Team: *Vanshika Asthana, Vasvi Yadav*.
+1. Push the project repository to GitHub.
+2. Log in to Render and select **New + → Web Service**.
+3. Connect your GitHub repository.
+4. Select **Python 3** as the runtime.
+5. Configure the build command:
+
+```bash
+pip install -r requirements.txt
+```
+
+6. Configure the start command:
+
+```bash
+streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
+```
+
+7. Add the following environment variable:
+
+```text
+PYTHON_VERSION = 3.12.8
+```
+
+8. Deploy the application.
+
+## 🛠️ Technologies Used
+
+- **Programming Language:** Python
+- **Data Processing:** Pandas, NumPy
+- **Machine Learning:** Scikit-learn
+- **Chess Game Analysis:** python-chess
+- **Visualisation:** Matplotlib
+- **Model Persistence:** Joblib
+- **Frontend:** Streamlit
+- **Deployment:** Render
+- **Version Control:** Git and GitHub
+
+## 🙌 Credits
+
+- **Dataset:** [Lichess Elite Database](https://database.nikonoel.fr/)
+- **Course:** CSL236 — Introduction to AI and ML
+- **Institution:** The NorthCap University, Gurugram
+- **Project Team:** Vanshika Asthana and Vasvi Yadav
+
+---
+
+*ChessDNA — Understanding how a player plays, one move at a time.*
