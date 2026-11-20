@@ -202,7 +202,7 @@ PYTHON_VERSION = 3.12.8
 - **Dataset:** [Lichess Elite Database](https://database.nikonoel.fr/)
 - **Course:** CSL236 — Introduction to AI and ML
 - **Institution:** The NorthCap University, Gurugram
-- **Project Team:** Vanshika Asthana and Vasvi Yadav
+- **Project Team:** Vanshika Asthana and Vasvi Yadav 
 
 ---
 
