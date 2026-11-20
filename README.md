@@ -206,4 +206,4 @@ PYTHON_VERSION = 3.12.8
 
 ---
 
-*ChessDNA — Understanding how a player plays, one move at a time.*
+*ChessDNA - Understanding how a player plays, one move at a time.*
