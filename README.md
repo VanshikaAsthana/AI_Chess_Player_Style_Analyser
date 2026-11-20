@@ -158,7 +158,7 @@ Open the local URL displayed in your terminal to use the application.
 **Python requirement:** Python 3.12 or newer, subject to the pinned package versions.
 
 ## ☁️ Deployment on Render
-
+             
 The application is deployed using [Render](https://render.com/).
 
 1. Push the project repository to GitHub.
@@ -193,7 +193,7 @@ PYTHON_VERSION = 3.12.8
 - **Chess Game Analysis:** python-chess
 - **Visualisation:** Matplotlib
 - **Model Persistence:** Joblib
-- **Frontend:** Streamlit
+- **Frontend:** Streamlit    
 - **Deployment:** Render
 - **Version Control:** Git and GitHub
 
