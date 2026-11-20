@@ -138,7 +138,7 @@ The trained model is saved in `style_model.joblib`. The application loads this f
 
 ```bash
 git clone <your-repository-url>
-cd AI_Chess_Player_Analyser
+cd AI_Chess_Player_Style_Analyser 
 ```
 
 **2. Install dependencies**
